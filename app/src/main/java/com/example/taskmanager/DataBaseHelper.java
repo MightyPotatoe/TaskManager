@@ -2,6 +2,7 @@ package com.example.taskmanager;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -11,7 +12,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     //DATABASE PARAMETERS
     private static final String DATABASE_NAME = "tasklist.db";
-    private static final String TABLE_NAME = "task_list";
+    private static final String TABLE_NAME = "TASK_LIST";
     private static final String COL_1 = "ID";
     private static final String COL_2 = "NAME";
     private static final String COL_3 = "STATUS";
@@ -38,7 +39,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         for(String task: tasksNames){
             ContentValues contentValues = new ContentValues();
             contentValues.put(COL_2, task);
-            contentValues.put(COL_3, "OPEN");
+            contentValues.put(COL_3, TaskStatus.OPEN);
             db.insert(TABLE_NAME, null, contentValues);
         }
     }
@@ -49,22 +50,42 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertData (String name){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_2, name);
-        contentValues.put(COL_3, "OPEN");
-        long result = db.insert(TABLE_NAME, null, contentValues);
-        if(result == -1)
-        {
-            return false;
-        }
-        else {
-            return true;
-        }
+    Cursor findRecordByID(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COL_1 + " = ?", new String[] {String.valueOf(id)});
     }
 
+     Cursor getAllRecords(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+    }
 
+    Cursor checkForStatus(String status){
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT " + COL_1 + " FROM " + TABLE_NAME + " WHERE " + COL_3 + " = ?", new String[] {status});
+    }
+
+    Cursor getAllStatuses(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT " +COL_1 + ", " + COL_3 + " FROM " + TABLE_NAME, null);
+    }
+
+    Cursor findStatusByID(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT " + COL_3 + " FROM " + TABLE_NAME + " WHERE " + COL_1 + " =?", new String[] {String.valueOf(id)});
+    }
+
+    boolean changeStatusOnID(int id, String newStatus){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = findRecordByID(id);
+        cursor.moveToNext();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_1, cursor.getString(0));
+        contentValues.put(COL_2, cursor.getString(1));
+        contentValues.put(COL_3, newStatus);
+        db.update(TABLE_NAME, contentValues, "ID = ?", new String[] {String.valueOf(id)});
+        return true;
+    }
 
 
 }
