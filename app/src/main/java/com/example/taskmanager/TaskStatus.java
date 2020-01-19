@@ -1,10 +1,10 @@
 package com.example.taskmanager;
 
-public final class TaskStatus {
+ final class TaskStatus {
     //STATUS constants
-    public static final String OPEN = "OPEN";
-    public static final String TRAVELLING = "TRAVELLING";
-    public static final String WORKING = "WORKING";
+    static final String OPEN = "OPEN";
+    static final String TRAVELLING = "TRAVELLING";
+    static final String WORKING = "WORKING";
 
 }
 

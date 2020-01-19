@@ -17,7 +17,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String COL_2 = "NAME";
     private static final String COL_3 = "STATUS";
 
-    public DataBaseHelper(@Nullable Context context) {
+    DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
         this.getWritableDatabase();
     }
@@ -50,7 +50,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    Cursor findRecordByID(int id){
+    private Cursor findRecordByID(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COL_1 + " = ?", new String[] {String.valueOf(id)});
     }
